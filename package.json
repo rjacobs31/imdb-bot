@@ -1,0 +1,15 @@
+{
+  "name": "imdb-bot",
+  "version": "0.0.1",
+  "description": "A bot for searching similar movies on IMDB.",
+  "main": "index.js",
+  "dependencies": {
+    "botpress": "0.x"
+  },
+  "scripts": {
+    "start": "botpress start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "R. Jacobs",
+  "license": "Botpress Proprietary License"
+}
