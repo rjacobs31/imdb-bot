@@ -10,6 +10,10 @@
     "start": "botpress start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/rjacobs31/imdb-bot.git"
+  },
   "author": "R. Jacobs",
   "license": "Botpress Proprietary License"
 }
