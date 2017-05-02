@@ -4,6 +4,7 @@
   "description": "A bot for searching similar movies on IMDB.",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "botpress": "0.x",
     "cheerio": "^0.22.0"
   },
@@ -12,8 +13,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/rjacobs31/imdb-bot.git"
+    "type": "git",
+    "url": "https://github.com/rjacobs31/imdb-bot.git"
   },
   "author": "R. Jacobs",
   "license": "Botpress Proprietary License"
