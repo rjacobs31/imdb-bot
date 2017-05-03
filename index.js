@@ -1,5 +1,6 @@
 module.exports = function(bp) {
   const imdb = require('imdb-api');
+  const similar = require('./utils/similar_search');
 
   bp.middlewares.load();
 
@@ -45,5 +46,22 @@ module.exports = function(bp) {
     .catch(() => {
       bp.slack.sendText(event.channel.id, 'I couldn\'t find a movie like that. Sorry.');
     });
+  });
+
+  const reSimilar = /^\s*similar /i;
+  bp.hear({platform: 'slack', type: 'message', direct: true, text: reSimilar}, (event, next) => {
+    let query = event.text.replace(reSimilar, '');
+    if (!query) next();
+
+    bp.slack.sendText(event.channel.id, 'Searching for similar movies');
+    similar.getSimilar('tt0241527')
+      .then((similarMovies) => {
+        if (similarMovies) {
+          bp.slack.sendText(event.channel.id, similarMovies.join(', '));
+        }
+      })
+      .catch(() => {
+        bp.slack.sendText(event.channel.id, 'I couldn\'t find a movie like that. Sorry.');
+      });
   });
 };
