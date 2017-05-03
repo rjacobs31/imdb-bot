@@ -1,3 +1,3 @@
 module.exports = function(bp) {
-  bp.middlewares.load()
-}
+  bp.middlewares.load();
+};
