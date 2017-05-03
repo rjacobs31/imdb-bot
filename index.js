@@ -30,6 +30,10 @@ module.exports = function(bp) {
                   value: result.genres
                 },
                 {
+                  title: 'IMDB page',
+                  value: result.imdburl
+                },
+                {
                   title: 'Plot',
                   value: result.plot
                 }
