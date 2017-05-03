@@ -55,4 +55,4 @@ module.exports = {
     // customerId: process.env.BOTPRESS_CUSTOMER_ID || '',
     // licenseKey: process.env.BOTPRESS_LICENSE_KEY || ''
   }
-}
+};
