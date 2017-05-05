@@ -4,7 +4,7 @@ module.exports = function(bp) {
 
   bp.middlewares.load();
 
-  const reFind = /^\s*find /i;
+  const reFind = /^\s*find\s+/i;
   bp.hear({platform: 'slack', type: 'message', direct: true, text: reFind}, (event, next) => {
     let query = event.text.replace(reFind, '');
     if (!query) next();
@@ -48,7 +48,7 @@ module.exports = function(bp) {
     });
   });
 
-  const reSimilar = /^\s*similar /i;
+  const reSimilar = /^\s*similar\s+/i;
   bp.hear({platform: 'slack', type: 'message', direct: true, text: reSimilar}, (event, next) => {
     let query = event.text.replace(reSimilar, '');
     if (!query) next();
