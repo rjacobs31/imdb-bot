@@ -61,10 +61,15 @@ module.exports = function(bp) {
     if (!query) next();
 
     bp.slack.sendText(event.channel.id, 'Searching for similar movies');
-    similar.getSimilar('tt0241527')
+    similar.getSimilar(query)
       .then((similarMovies) => {
         if (similarMovies) {
-          bp.slack.sendText(event.channel.id, similarMovies.join(', '));
+          let idArr = [];
+          for (let idx in similarMovies) {
+            let movie = similarMovies[idx];
+            idArr.push(movie.title + ' (' + movie.imdbid + ')');
+          }
+          bp.slack.sendText(event.channel.id, idArr.join(', '));
         }
       })
       .catch(() => {
