@@ -37,8 +37,15 @@ module.exports = function(bp) {
                 {
                   title: 'Plot',
                   value: result.plot
+                },
+                {
+                  title: 'IMDb ID',
+                  value: result.imdbid
                 }
               ]
+            },
+            {
+              text: 'To find similar movies, type "similar ' + result.imdbid + '" (without the quotes)'
             }
           ]);
         }
