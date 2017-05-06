@@ -6,6 +6,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "botpress": "0.x",
+    "botpress-messenger": "^2.0.11",
     "botpress-slack": "^1.0.21",
     "cheerio": "^0.22.0",
     "imdb-api": "^2.2.2",
