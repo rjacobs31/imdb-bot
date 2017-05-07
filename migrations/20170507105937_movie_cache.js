@@ -14,5 +14,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfTableExists('cached_movie');
+  return knex.schema.dropTableIfExists('cached_movie');
 };
