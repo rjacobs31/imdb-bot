@@ -67,7 +67,14 @@ module.exports = function(bp) {
             }
             const maxElements = 10;
             let elements = _.map(_.slice(movies, 0, maxElements), (movie) => {
-              return {title: movie.title, subtitle: 'Rating: ' + movie.rating};
+              return {
+                title: movie.title,
+                subtitle: 'Rating: ' + movie.rating,
+                buttons: [
+                  { type: 'postback', title: 'Get info', payload: 'basic:' + movie.imdbid },
+                  { type: 'web_url', title: 'Visit IMDb page', url: imdbBaseUrl + movie.imdbid }
+                ]
+              };
             });
             let payload = {
               template_type: 'generic',
