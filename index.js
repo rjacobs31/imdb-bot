@@ -1,7 +1,7 @@
 module.exports = function(bp) {
+  const _ = require('lodash');
   const imdb = require('imdb-api');
   const similar = require('./utils/similar_search');
-  const _ = require('lodash');
 
   const imdbBaseUrl = 'https://www.imdb.com/title/';
 
@@ -54,6 +54,28 @@ module.exports = function(bp) {
     .catch(() => {
       bp.messenger.sendText(event.user.id, 'I couldn\'t find a movie like that. Sorry.');
     });
+  });
+
+  const reSimilarPostback = /^similar:/i;
+  bp.hear({platform: 'facebook', type: 'postback', text: reSimilarPostback}, (event) => {
+    bp.db.get()
+      .then((knex) => {
+        return similar.getSimilar(knex, _.replace(event.text, reSimilarPostback, ''))
+          .then((movies) => {
+            if (_.isEmpty(movies)) {
+              return bp.messenger.sendText('Sorry, but I couldn\'t find similar movies.');
+            }
+            const maxElements = 10;
+            let elements = _.map(_.slice(movies, 0, maxElements), (movie) => {
+              return {title: movie.title, subtitle: 'Rating: ' + movie.rating};
+            });
+            let payload = {
+              template_type: 'generic',
+              elements: elements
+            };
+            bp.messenger.sendTemplate(event.user.id, payload);
+          });
+      });
   });
 
   const reFind = /^\s*find\s+/i;
