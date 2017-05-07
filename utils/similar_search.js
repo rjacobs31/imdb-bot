@@ -1,7 +1,8 @@
 let cheerio = require('cheerio');
-let imdb = require('imdb-api');
 let rp = require('request-promise');
 let Promise = require('bluebird');
+
+let cachedMovie = require('./cached_movie');
 
 const urlPrefix = 'https://www.imdb.com/title/';
 const imdbIdRe = /^tt[0-9]+$/;
@@ -27,7 +28,7 @@ function getSimilar(id) {
       });
 
       return Promise.map(ids, (simId) => {
-        return imdb.getById(simId);
+        return cachedMovie.getById(simId);
       });
     });
 }
