@@ -1,5 +1,6 @@
 module.exports = function(bp) {
   const _ = require('lodash');
+  const cachedMovie = require('./utils/cached_movie');
   const imdb = require('imdb-api');
   const similar = require('./utils/similar_search');
 
@@ -54,6 +55,38 @@ module.exports = function(bp) {
     .catch(() => {
       bp.messenger.sendText(event.user.id, 'I couldn\'t find a movie like that. Sorry.');
     });
+  });
+
+  const reBasicPostback = /^basic:/i;
+  bp.hear({platform: 'facebook', type: 'postback', text: reBasicPostback}, (event) => {
+    bp.db.get()
+      .then((knex) => {
+        return cachedMovie.getById(knex, _.replace(event.text, reBasicPostback, ''))
+          .then((result) => {
+            if (result) {
+              let fields = [
+                'Title: ' + result.title,
+                'Rated: ' + result.rated,
+                'Rating: ' + result.rating,
+                'Running time: ' + result.runtime,
+                'Genres: ' + result.genres
+              ];
+
+              let buttons = [
+                { type: 'web_url', title: 'Visit IMDb page', url: imdbBaseUrl + result.imdbid },
+                { type: 'postback', title: 'Get plot info', payload: 'plot:' + result.imdbid },
+                { type: 'postback', title: 'Get similar movies', payload: 'similar:' + result.imdbid }
+              ];
+
+              let payload = {
+                template_type: 'button',
+                text: _.join(fields, '\n'),
+                buttons: buttons
+              };
+              bp.messenger.sendTemplate(event.user.id, payload);
+            }
+          });
+      });
   });
 
   const reSimilarPostback = /^similar:/i;
