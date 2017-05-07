@@ -16,6 +16,7 @@ module.exports = function(bp) {
             'Title: ' + result.title,
             'Rated: ' + result.rated,
             'Rating: ' + result.rating,
+            'Running time: ' + result.runtime,
             'Genres: ' + result.genres
           ];
 
