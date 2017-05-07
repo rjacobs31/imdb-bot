@@ -10,10 +10,10 @@ module.exports = function(bp){
     return bp.db.get()
       .then((knexInstance) => {
         knex = knexInstance;
-        return knex('cached_movie').where('imdbid', id);
+        return knex.select().from('cached_movie').where('imdbid', id);
       })
       .then((results) => {
-        if (_.isEmpty()) {
+        if (_.isEmpty(results)) {
           return imdb.getById(id)
             .then((movie) => {
               if (movie) {
