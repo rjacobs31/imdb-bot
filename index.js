@@ -7,6 +7,11 @@ module.exports = function(bp) {
 
   bp.middlewares.load();
 
+  // Ensure all DB migrations have run
+  bp.db.get().then(knex => {
+    knex.migrate.latest({'directory': bp.projectLocation + '/migrations'});
+  });
+
   bp.hear({platform: 'facebook', type: 'message'}, (event) => {
     bp.messenger.sendText(event.user.id, 'Roger. Give me a second to look for "' + event.text + '".');
     imdb.get(event.text)
