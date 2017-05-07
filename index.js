@@ -1,8 +1,49 @@
 module.exports = function(bp) {
   const imdb = require('imdb-api');
   const similar = require('./utils/similar_search');
+  const _ = require('lodash');
+
+  const imdbBaseUrl = 'https://www.imdb.com/title/';
 
   bp.middlewares.load();
+
+  bp.hear({platform: 'facebook', type: 'message'}, (event) => {
+    bp.messenger.sendText(event.user.id, 'Roger. Give me a second to look for "' + event.text + '".');
+    imdb.get(event.text)
+      .then((result) => {
+        if (result) {
+          let fields = [
+            'Title: ' + result.title,
+            'Rated: ' + result.rated,
+            'Rating: ' + result.rating,
+            'Genres: ' + result.genres
+          ];
+
+          let buttons = [
+            {
+              type: 'web_url',
+              title: 'Visit IMDb page',
+              url: imdbBaseUrl + result.imdbid
+            },
+            {
+              type: 'postback',
+              title: 'Get plot info',
+              payload: 'plot_' + result.imdbid
+            }
+          ];
+
+          let payload = {
+            template_type: 'button',
+            text: _.join(fields, '\n'),
+            buttons: buttons
+          };
+          bp.messenger.sendTemplate(event.user.id, payload);
+        }
+      })
+    .catch(() => {
+      bp.messenger.sendText(event.user.id, 'I couldn\'t find a movie like that. Sorry.');
+    });
+  });
 
   const reFind = /^\s*find\s+/i;
   bp.hear({platform: 'slack', type: 'message', direct: true, text: reFind}, (event, next) => {
