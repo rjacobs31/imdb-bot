@@ -29,7 +29,12 @@ module.exports = function(bp) {
             {
               type: 'postback',
               title: 'Get plot info',
-              payload: 'plot_' + result.imdbid
+              payload: 'plot:' + result.imdbid
+            },
+            {
+              type: 'postback',
+              title: 'Get similar movies',
+              payload: 'similar:' + result.imdbid
             }
           ];
 
