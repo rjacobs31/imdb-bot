@@ -58,6 +58,10 @@ module.exports = function(bp) {
     });
   });
 
+  bp.hear({platform: 'facebook', type: 'postback', text: 'GET_STARTED'}, (event) => {
+    bp.messenger.sendText(event.user.id, 'Hi, there! Type any movie title to start.');
+  });
+
   const reBasicPostback = /^basic:/i;
   bp.hear({platform: 'facebook', type: 'postback', text: reBasicPostback}, (event) => {
     cachedMovie.getById(_.replace(event.text, reBasicPostback, ''))

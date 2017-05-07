@@ -37,7 +37,6 @@ module.exports = function(bp){
         } else {
           return Promise.resolve(results[0]);
         }
-
       });
   }
 
