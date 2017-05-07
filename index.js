@@ -89,6 +89,30 @@ module.exports = function(bp) {
       });
   });
 
+  const rePlotPostback = /^plot:/i;
+  bp.hear({platform: 'facebook', type: 'postback', text: rePlotPostback}, (event) => {
+    bp.db.get()
+      .then((knex) => {
+        return cachedMovie.getById(knex, _.replace(event.text, rePlotPostback, ''))
+          .then((result) => {
+            if (result) {
+              let buttons = [
+                { type: 'web_url', title: 'Visit IMDb page', url: imdbBaseUrl + result.imdbid },
+                { type: 'postback', title: 'Get basic info', payload: 'basic:' + result.imdbid },
+                { type: 'postback', title: 'Get similar movies', payload: 'similar:' + result.imdbid }
+              ];
+
+              let payload = {
+                template_type: 'button',
+                text: result.title + '\n' + _.truncate(result.plot, {length: 630}),
+                buttons: buttons
+              };
+              bp.messenger.sendTemplate(event.user.id, payload);
+            }
+          });
+      });
+  });
+
   const reSimilarPostback = /^similar:/i;
   bp.hear({platform: 'facebook', type: 'postback', text: reSimilarPostback}, (event) => {
     bp.db.get()
