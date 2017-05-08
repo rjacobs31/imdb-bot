@@ -117,7 +117,7 @@ module.exports = function(bp) {
     similar.getSimilar(_.replace(event.text, reSimilarPostback, ''))
       .then((movies) => {
         if (_.isEmpty(movies)) {
-          return bp.messenger.sendText('Sorry, but I couldn\'t find similar movies.');
+          return bp.messenger.sendText(event.user.id, 'Sorry, but I couldn\'t find similar movies.');
         }
         const maxElements = 10;
         let elements = _.map(_.slice(movies, 0, maxElements), (movie) => {
