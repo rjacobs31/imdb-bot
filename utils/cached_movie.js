@@ -31,9 +31,10 @@ module.exports = function(bp){
                     return Promise.resolve(movie);
                   });
               } else {
-                return Promise.resolve({});
+                return Promise.resolve();
               }
-            });
+            })
+            .catch(() => Promise.resolve());
         } else {
           return Promise.resolve(results[0]);
         }

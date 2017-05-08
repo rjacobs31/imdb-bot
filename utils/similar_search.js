@@ -28,7 +28,8 @@ module.exports = function(bp) {
     .then(($) => {
       let similarNodes = $('#titleRecs .rec_page .rec_item[data-tconst]');
       let ids = _.map(_.slice(similarNodes, 0, count), (el) => $(el).attr('data-tconst'));
-      return Promise.map(ids, (simId) => cachedMovie.getById(simId));
+      return Promise.map(ids, (simId) => cachedMovie.getById(simId))
+        .then((results) => Promise.resolve(_.compact(results)));
     });
   }
 
