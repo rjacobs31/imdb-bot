@@ -19,6 +19,9 @@ module.exports = function(bp) {
     imdb.get(event.text)
       .then((result) => {
         if (result) {
+          if ('poster' in result) {
+            bp.messenger.sendAttachment(event.user.id, 'image', result.poster, {typing: 2000, waitDelivery: true});
+          }
           let fields = [
             'Title: ' + result.title,
             'Rated: ' + result.rated,
@@ -67,6 +70,9 @@ module.exports = function(bp) {
     cachedMovie.getById(_.replace(event.text, reBasicPostback, ''))
       .then((result) => {
         if (result) {
+          if ('poster' in result) {
+            bp.messenger.sendAttachment(event.user.id, 'image', result.poster, {typing: 2000, waitDelivery: true});
+          }
           let fields = [
             'Title: ' + result.title,
             'Rated: ' + result.rated,
@@ -123,6 +129,7 @@ module.exports = function(bp) {
         let elements = _.map(_.slice(movies, 0, maxElements), (movie) => {
           return {
             title: movie.title,
+            image_url: ('poster' in movie ? movie.poster : null),
             subtitle: 'Rating: ' + movie.rating,
             buttons: [
               { type: 'postback', title: 'Get info', payload: 'basic:' + movie.imdbid },
@@ -132,6 +139,7 @@ module.exports = function(bp) {
         });
         let payload = {
           template_type: 'generic',
+          image_aspect_ratio: 'square',
           elements: elements
         };
         bp.messenger.sendTemplate(event.user.id, payload);
