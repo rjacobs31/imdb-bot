@@ -24,7 +24,8 @@ module.exports = function(bp){
                   'rating',
                   'genres',
                   'runtime',
-                  'plot'
+                  'plot',
+                  'poster'
                 ]);
                 return knex('cached_movie').insert(movieData, 'id')
                   .then(() => {
