@@ -30,9 +30,7 @@ module.exports = function(bp) {
     imdb.get(event.text)
       .then((result) => {
         if (result) {
-          if ('poster' in result) {
-            bp.messenger.sendAttachment(event.user.id, 'image', result.poster, {typing: 2000, waitDelivery: true});
-          }
+          bp.messenger.sendText('Here\'s that movie you wanted.');
           let fields = [
             'Title: ' + result.title,
             'Rated: ' + result.rated,
@@ -64,7 +62,14 @@ module.exports = function(bp) {
             text: _.join(fields, '\n'),
             buttons: buttons
           };
-          bp.messenger.sendTemplate(event.user.id, payload);
+          if ('poster' in result) {
+            bp.messenger.sendAttachment(event.user.id, 'image', result.poster, {typing: 2000, waitDelivery: true})
+              .then(() => {
+                bp.messenger.sendTemplate(event.user.id, payload);
+              });
+          } else {
+            bp.messenger.sendTemplate(event.user.id, payload);
+          }
         }
       })
     .catch(() => {
