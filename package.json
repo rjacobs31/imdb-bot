@@ -7,6 +7,7 @@
     "bluebird": "^3.5.0",
     "botpress": "0.x",
     "botpress-messenger": "^2.0.11",
+    "botpress-wit": "^2.0.10",
     "cheerio": "^0.22.0",
     "imdb-api": "^2.2.2",
     "lodash": "^4.17.4",
