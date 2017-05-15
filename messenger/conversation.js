@@ -90,6 +90,18 @@ module.exports = function(bp) {
           callback: () => {
             convo.stop();
           }
+        },
+        {
+          pattern: /plot/i,
+          callback: () => {
+            let movie = convo.get('movie');
+            if ('plot' in movie) {
+              convo.say(txt(_.truncate(movie.plot, 630)));
+            } else {
+              convo.say(txt('It turns out I don\'t have a detailed plot for "' + movie.plot + '". Sorry!'));
+            }
+            convo.repeat();
+          }
         }
       ]);
 
