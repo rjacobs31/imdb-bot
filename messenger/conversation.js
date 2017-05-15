@@ -1,12 +1,19 @@
+const patterns = {
+  affirmative: /please|yes|yup/i,
+  empty: /^\s*$/,
+  greeting: /h[ae]llo|hi/i,
+  negative: /no|nope|nah/i
+};
+
 module.exports = function(bp) {
-  bp.hear({platform: 'facebook', text: /h[ae]llo|hi/i}, (event) => {
+  bp.hear({platform: 'facebook', text: patterns.greeting}, (event) => {
     const txt = txt => bp.messenger.createText(event.user.id, txt);
 
     bp.convo.start(event, (convo) => {
       convo.threads['default'].addMessage(txt('Hello! This is an example conversation.'));
       convo.threads['default'].addQuestion(txt('Would you like to look up a movie?'), [
         {
-          pattern: /please|yes|yup/i,
+          pattern: patterns.affirmative,
           callback: () => {
             convo.set('type', 'movie_search');
             convo.say(txt('Great! We can do that.'));
@@ -25,7 +32,7 @@ module.exports = function(bp) {
       convo.createThread('search');
       convo.threads['search'].addQuestion(txt('Which movie do you want to look up?'), [
         {
-          pattern: '^$',
+          pattern: patterns.empty,
           callback: () => {
             convo.say(txt('Sorry, but I can\'t search for a movie without a title.'));
             convo.repeat();
