@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const imdb = require('imdb-api');
 
 const patterns = {
@@ -50,16 +51,39 @@ module.exports = function(bp) {
             convo.say(txt('Great, I\'ll search for that in a moment.'));
             movie = await imdb.get(title);
             if (movie) {
-              convo.set('imdbid', movie.imdbid);
+              convo.set('movie', movie);
               convo.say(txt('Found it!'));
               await cachedMovie.upsert(movie);
-              convo.say(txt(movie.title));
+              let sentences = [];
+
+              if ('title' in movie) {
+                sentences.push('The movie is titled "' + movie.title + '".');
+              }
+
+              if ('runtime' in movie && 'rated' in movie) {
+                sentences.push('It\'s ' + movie.runtime + ' long and is rated ' + movie.rated + '.');
+              } else if ('runtime' in movie) {
+                sentences.push('It\'s ' + movie.runtime + ' long.');
+              } else if ('rated' in movie) {
+                sentences.push('It\'s rated ' + movie.rated + '.');
+              }
+
+              if ('rating' in movie) {
+                sentences.push('It has a rating of ' + movie.rating + '.');
+              }
+
+              convo.say(txt(_.join(sentences, ' ')));
+              convo.switchTo('movie_actions');
             } else {
               convo.say(txt('Sorry, but I couldn\'t find a movie like that.'));
+              convo.next();
             }
           }
         }
       ]);
+
+      convo.createThread('movie_actions');
+      convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), []);
 
       convo.on('done', () => {
         convo.say(txt('Thanks for the conversation! Good talk.'));
