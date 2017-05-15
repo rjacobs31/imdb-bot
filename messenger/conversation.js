@@ -1,3 +1,5 @@
+const imdb = require('imdb-api');
+
 const patterns = {
   affirmative: /please|yes|yup/i,
   empty: /^[\s\p{Z}]*$/,
@@ -6,6 +8,8 @@ const patterns = {
 };
 
 module.exports = function(bp) {
+  const cachedMovie = require('../utils/cached_movie')(bp);
+
   bp.hear({platform: 'facebook', text: patterns.greeting}, (event) => {
     const txt = txt => bp.messenger.createText(event.user.id, txt);
 
@@ -40,9 +44,19 @@ module.exports = function(bp) {
         },
         {
           default: true,
-          callback: () => {
+          callback: async function(ev) {
+            let title = ev.text;
+            let movie = null;
             convo.say(txt('Great, I\'ll search for that in a moment.'));
-            convo.next();
+            movie = await imdb.get(title);
+            if (movie) {
+              convo.set('imdbid', movie.imdbid);
+              convo.say(txt('Found it!'));
+              await cachedMovie.upsert(movie);
+              convo.say(txt(movie.title));
+            } else {
+              convo.say(txt('Sorry, but I couldn\'t find a movie like that.'));
+            }
           }
         }
       ]);
