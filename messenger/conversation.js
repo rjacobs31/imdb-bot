@@ -2,6 +2,7 @@ const _ = require('lodash');
 const imdb = require('imdb-api');
 
 const patterns = {
+  abort: /abort|cancel|stop/i,
   affirmative: /please|yes|yup/i,
   empty: /^[\s\p{Z}]*$/,
   greeting: /h[ae]llo|hi/i,
@@ -83,7 +84,14 @@ module.exports = function(bp) {
       ]);
 
       convo.createThread('movie_actions');
-      convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), []);
+      convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), [
+        {
+          pattern: patterns.abort,
+          callback: () => {
+            convo.stop();
+          }
+        }
+      ]);
 
       convo.on('done', () => {
         convo.say(txt('Thanks for the conversation! Good talk.'));
