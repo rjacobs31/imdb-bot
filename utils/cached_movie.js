@@ -1,6 +1,17 @@
-let _ = require('lodash');
-let imdb = require('imdb-api');
-let Promise = require('bluebird');
+const _ = require('lodash');
+const imdb = require('imdb-api');
+const Promise = require('bluebird');
+
+const fieldList = [
+  'imdbid',
+  'title',
+  'rated',
+  'rating',
+  'genres',
+  'runtime',
+  'plot',
+  'poster'
+];
 
 module.exports = function(bp){
   function getById(id) {
@@ -17,16 +28,7 @@ module.exports = function(bp){
           return imdb.getById(id)
             .then((movie) => {
               if (movie) {
-                let movieData = _.pick(movie, [
-                  'imdbid',
-                  'title',
-                  'rated',
-                  'rating',
-                  'genres',
-                  'runtime',
-                  'plot',
-                  'poster'
-                ]);
+                let movieData = _.pick(movie, fieldList);
                 return knex('cached_movie').insert(movieData, 'id')
                   .then(() => {
                     return Promise.resolve(movie);
