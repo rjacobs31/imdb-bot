@@ -1,6 +1,6 @@
 const patterns = {
   affirmative: /please|yes|yup/i,
-  empty: /^\s*$/,
+  empty: /^[\s\p{Z}]*$/,
   greeting: /h[ae]llo|hi/i,
   negative: /no|nope|nah/i
 };
