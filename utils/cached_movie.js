@@ -46,6 +46,7 @@ module.exports = function(bp){
 
   function upsert(movie) {
     if (!movie) return Promise.reject('Attempt to insert empty movie.');
+    movie = _.pick(movie, fieldList);
     let knex = null;
 
     return bp.db.get()
