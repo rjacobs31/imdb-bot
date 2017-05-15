@@ -44,7 +44,30 @@ module.exports = function(bp){
       });
   }
 
+  function upsert(movie) {
+    if (!movie) return Promise.reject('Attempt to insert empty movie.');
+    let knex = null;
+
+    return bp.db.get()
+      .then((knexInstance) => {
+        knex = knexInstance;
+        return knex.select().from('cached_movie').where('imdbid', movie.imdbid);
+      })
+      .then((oldMovies) => {
+        if (oldMovies) {
+          return knex('cached_movie').where('imdbid', movie.imdbid).update(movie, 'id');
+        } else {
+          let movieData = _.pick(movie, fieldList);
+          return knex('cached_movie').insert(movieData, 'id');
+        }
+      })
+      .then(() => {
+        return Promise.resolve(movie);
+      });
+  }
+
   return {
-    getById: getById
+    getById: getById,
+    upsert: upsert
   };
 };
