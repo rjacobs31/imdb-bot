@@ -89,7 +89,7 @@ module.exports = function(bp) {
         {
           pattern: patterns.abort,
           callback: () => {
-            convo.stop();
+            convo.stop('done');
           }
         },
         {
