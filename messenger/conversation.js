@@ -87,6 +87,13 @@ module.exports = function(bp) {
       convo.createThread('movie_actions');
       convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), [
         {
+          default: true,
+          callback: () => {
+            convo.say(txt('Sorry, I\'m still learning to understand humans. Please try again.'));
+            convo.repeat();
+          }
+        },
+        {
           pattern: patterns.abort,
           callback: () => {
             convo.stop('done');
