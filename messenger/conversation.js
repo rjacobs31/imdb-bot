@@ -104,7 +104,14 @@ module.exports = function(bp) {
           callback: () => {
             let movie = convo.get('movie');
             if ('plot' in movie) {
-              convo.say(txt(_.truncate(movie.plot, 630)));
+              let sentences = _.split(movie.plot, '. ');
+              _.forEach(sentences, (val, i) => {
+                if (i < sentences.length - 1) {
+                  convo.say(txt(val + '.'));
+                } else {
+                  convo.say(txt(val));
+                }
+              });
             } else {
               convo.say(txt('It turns out I don\'t have a detailed plot for "' + movie.plot + '". Sorry!'));
             }
