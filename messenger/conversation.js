@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const imdb = require('imdb-api');
 
+const msgMaxLen = 300;
+
 const patterns = {
   abort: /abort|cancel|stop/i,
   affirmative: /please|yes|yup/i,
@@ -18,8 +20,15 @@ module.exports = function(bp) {
 
     bp.convo.start(event, (convo) => {
       convo.messageTypes = ['text', 'message', 'quick_reply'];
+
+      const greetOptions = {
+        quick_replies: [
+          {content_type: 'text', title: 'Yes', payload: 'yes'},
+          {content_type: 'text', title: 'No', payload: 'no'}
+        ]
+      };
       convo.threads['default'].addMessage(txt('Hello! This is an example conversation.'));
-      convo.threads['default'].addQuestion(txt('Would you like to look up a movie?'), [
+      convo.threads['default'].addQuestion(txt('Would you like to look up a movie?', greetOptions), [
         {
           pattern: patterns.affirmative,
           callback: () => {
@@ -116,15 +125,41 @@ module.exports = function(bp) {
           pattern: /plot/i,
           callback: () => {
             let movie = convo.get('movie');
-            if ('plot' in movie) {
-              let sentences = _.split(movie.plot, '. ');
-              _.forEach(sentences, (val, i) => {
-                if (i < sentences.length - 1) {
-                  convo.say(txt(val + '.'));
-                } else {
-                  convo.say(txt(val));
+            if ('plot' in movie && _.isString(movie.plot)) {
+              const plot = movie.plot;
+              let sentences = [];
+
+              if (movie.plot.length <= msgMaxLen) {
+                convo.say(txt(movie.plot));
+              } else {
+                let i = 0;
+                while (i < plot.length) {
+                  if (plot.length - i <= msgMaxLen) {
+                    if (plot.length - i > 0) {
+                      sentences.push(plot.slice(i));
+                    }
+                    break;
+                  } else {
+                    let idx = plot.indexOf('.', i);
+                    if (idx < 0 || (idx - i > msgMaxLen)) {
+                      let lastIdx = plot.lastIndexOf(' ', i + msgMaxLen);
+                      if (lastIdx < 0 || lastIdx < i) {
+                        sentences.push(plot.slice(i, i + msgMaxLen));
+                        i += msgMaxLen;
+                      } else {
+                        sentences.push(plot.slice(i, lastIdx + 1));
+                        i = lastIdx + 1;
+                      }
+                    } else {
+                      sentences.push(plot.slice(i, idx + 1));
+                      i = idx + 1;
+                    }
+                  }
                 }
-              });
+                _.forEach(sentences, (val) => {
+                  convo.say(txt(_.trim(val)));
+                });
+              }
             } else {
               convo.say(txt(`It turns out I don\'t have a detailed plot for "${movie.title}". Sorry!`));
             }
