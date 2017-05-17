@@ -13,8 +13,8 @@ module.exports = function(bp) {
   const cachedMovie = require('../utils/cached_movie')(bp);
 
   bp.hear({platform: 'facebook', text: patterns.greeting}, (event) => {
-    const txt = txt => bp.messenger.createText(event.user.id, txt);
     if (bp.convo.find(event)) return;
+    const txt = (txt, options) => bp.messenger.createText(event.user.id, txt, options);
 
     bp.convo.start(event, (convo) => {
       convo.threads['default'].addMessage(txt('Hello! This is an example conversation.'));
