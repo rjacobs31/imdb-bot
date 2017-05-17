@@ -85,6 +85,10 @@ module.exports = function(bp) {
       ]);
 
       convo.createThread('movie_actions');
+      convo.threads['movie_actions'].addMessage(txt(
+        'Now that we have a movie, there are several things we can do.'
+      ));
+      convo.threads['movie_actions'].addMessage(txt('I can get you the *plot* of the movie.'));
       convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), [
         {
           default: true,
