@@ -59,19 +59,19 @@ module.exports = function(bp) {
               let sentences = [];
 
               if ('title' in movie) {
-                sentences.push('The movie is titled "' + movie.title + '".');
+                sentences.push(`The movie is titled "${movie.title}".`);
               }
 
               if ('runtime' in movie && 'rated' in movie) {
-                sentences.push('It\'s ' + movie.runtime + ' long and is rated ' + movie.rated + '.');
+                sentences.push(`It\'s ${movie.runtime} long and is rated ${movie.rated}.`);
               } else if ('runtime' in movie) {
-                sentences.push('It\'s ' + movie.runtime + ' long.');
+                sentences.push(`It\'s ${movie.runtime} long.`);
               } else if ('rated' in movie) {
-                sentences.push('It\'s rated ' + movie.rated + '.');
+                sentences.push('It\'s rated ${movie.rated}.');
               }
 
               if ('rating' in movie) {
-                sentences.push('It has a rating of ' + movie.rating + '.');
+                sentences.push(`It has a rating of ${movie.rating}.`);
               }
 
               convo.say(txt(_.join(sentences, ' ')));
@@ -113,7 +113,7 @@ module.exports = function(bp) {
                 }
               });
             } else {
-              convo.say(txt('It turns out I don\'t have a detailed plot for "' + movie.plot + '". Sorry!'));
+              convo.say(txt(`It turns out I don\'t have a detailed plot for "${movie.title}". Sorry!`));
             }
             convo.repeat();
           }
