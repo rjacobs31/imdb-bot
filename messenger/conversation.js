@@ -17,6 +17,7 @@ module.exports = function(bp) {
     const txt = (txt, options) => bp.messenger.createText(event.user.id, txt, options);
 
     bp.convo.start(event, (convo) => {
+      convo.messageTypes = ['text', 'message', 'quick_reply'];
       convo.threads['default'].addMessage(txt('Hello! This is an example conversation.'));
       convo.threads['default'].addQuestion(txt('Would you like to look up a movie?'), [
         {
@@ -88,8 +89,16 @@ module.exports = function(bp) {
       convo.threads['movie_actions'].addMessage(txt(
         'Now that we have a movie, there are several things we can do.'
       ));
-      convo.threads['movie_actions'].addMessage(txt('I can get you the *plot* of the movie.'));
-      convo.threads['movie_actions'].addQuestion(txt('What would you like to do?'), [
+      convo.threads['movie_actions'].addMessage(
+        txt('I can get you the *plot* of the movie.')
+      );
+      const actionsOptions = {
+        quick_replies: [
+          {content_type: 'text', title: 'Get plot', payload: 'plot'}
+        ]
+      };
+      const actionsMessage = txt('What would you like to do?', actionsOptions);
+      convo.threads['movie_actions'].addQuestion(actionsMessage, [
         {
           default: true,
           callback: () => {
