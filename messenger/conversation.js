@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const imdb = require('imdb-api');
+const chunk = require('../utils/text_chunking');
 
 const msgMaxLen = 300;
 
@@ -126,40 +127,10 @@ module.exports = function(bp) {
           callback: () => {
             let movie = convo.get('movie');
             if ('plot' in movie && _.isString(movie.plot)) {
-              const plot = movie.plot;
-              let sentences = [];
-
-              if (movie.plot.length <= msgMaxLen) {
-                convo.say(txt(movie.plot));
-              } else {
-                let i = 0;
-                while (i < plot.length) {
-                  if (plot.length - i <= msgMaxLen) {
-                    if (plot.length - i > 0) {
-                      sentences.push(plot.slice(i));
-                    }
-                    break;
-                  } else {
-                    let idx = plot.indexOf('.', i);
-                    if (idx < 0 || (idx - i > msgMaxLen)) {
-                      let lastIdx = plot.lastIndexOf(' ', i + msgMaxLen);
-                      if (lastIdx < 0 || lastIdx < i) {
-                        sentences.push(plot.slice(i, i + msgMaxLen));
-                        i += msgMaxLen;
-                      } else {
-                        sentences.push(plot.slice(i, lastIdx + 1));
-                        i = lastIdx + 1;
-                      }
-                    } else {
-                      sentences.push(plot.slice(i, idx + 1));
-                      i = idx + 1;
-                    }
-                  }
-                }
-                _.forEach(sentences, (val) => {
-                  convo.say(txt(_.trim(val)));
-                });
-              }
+              let sentences = chunk.chunkStr(movie.plot, msgMaxLen);
+              _.forEach(sentences, (val) => {
+                convo.say(txt(val));
+              });
             } else {
               convo.say(txt(`It turns out I don\'t have a detailed plot for "${movie.title}". Sorry!`));
             }
