@@ -35,6 +35,31 @@ function getMovieShortDescription(movie) {
   return sentences;
 }
 
+function getMovieWhoDescription(movie) {
+  let sentences = [];
+  let hasDirector = ('director' in movie && movie.director !== 'N\\A');
+  let hasWriter = ('writer' in movie && movie.writer !== 'N\\A');
+  let hasActors = ('actors' in movie && movie.actors !== 'N\\A');
+
+  if (hasDirector && hasWriter) {
+    sentences.push(`The movie was directed by ${movie.director} and written by ${movie.writer}.`);
+  } else if (hasDirector) {
+    sentences.push(`The movie was directed by ${movie.director}, but I don't know who wrote it.`);
+  } else if (hasWriter) {
+    sentences.push(`The movie was written by by ${movie.writer}, but I don't know who directed it.`);
+  }
+
+  if (hasActors) {
+    sentences.push(`It starred ${movie.actors}.`);
+  } else if (!hasDirector || !hasWriter) {
+    sentences.push('I also don\'t know who starred in it.');
+  } else {
+    sentences.push('I don\'t know who starred in it.');
+  }
+
+  return sentences;
+}
+
 module.exports = function(bp) {
   const cachedMovie = require('../utils/cached_movie')(bp);
 
@@ -109,9 +134,13 @@ module.exports = function(bp) {
       convo.threads['movie_actions'].addMessage(
         txt('I can get you the *plot* of the movie.')
       );
+      convo.threads['movie_actions'].addMessage(
+        txt('I can get you *who* helped create movie.')
+      );
       const actionsOptions = {
         quick_replies: [
-          {content_type: 'text', title: 'Get plot', payload: 'plot'}
+          {content_type: 'text', title: 'Get plot', payload: 'plot'},
+          {content_type: 'text', title: 'Get who helped', payload: 'who'}
         ]
       };
       const actionsMessage = txt('What would you like to do?', actionsOptions);
@@ -140,6 +169,21 @@ module.exports = function(bp) {
               });
             } else {
               convo.say(txt(`It turns out I don\'t have a detailed plot for "${movie.title}". Sorry!`));
+            }
+            convo.repeat();
+          }
+        },
+        {
+          pattern: /who/i,
+          callback: () => {
+            let movie = convo.get('movie');
+            if (movie) {
+              let sentences = getMovieWhoDescription(movie);
+              _.forEach(sentences, (val) => {
+                convo.say(txt(val));
+              });
+            } else {
+              convo.say(txt(`Sorry. I don't know anyone who helped to make "${movie.title}".`));
             }
             convo.repeat();
           }
