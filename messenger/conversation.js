@@ -163,7 +163,7 @@ module.exports = function(bp) {
           callback: () => {
             let movie = convo.get('movie');
             if ('plot' in movie && _.isString(movie.plot)) {
-              let sentences = chunk.chunkStr(movie.plot, msgMaxLen);
+              let sentences = chunk.chunkString(movie.plot, msgMaxLen);
               _.forEach(sentences, (val) => {
                 convo.say(txt(val));
               });
