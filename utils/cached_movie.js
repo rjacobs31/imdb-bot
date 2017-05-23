@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const imdb = require('imdb-api');
+const imdb = require('./imdb_wrapper');
 const Promise = require('bluebird');
 
 const fieldList = [

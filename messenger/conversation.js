@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const imdb = require('imdb-api');
+const imdb = require('../utils/imdb_wrapper');
 const chunk = require('../utils/text_chunking');
 
 const msgMaxLen = 300;
