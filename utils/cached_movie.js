@@ -10,7 +10,10 @@ const fieldList = [
   'genres',
   'runtime',
   'plot',
-  'poster'
+  'poster',
+  'director',
+  'writer',
+  'actors'
 ];
 
 module.exports = function(bp){
