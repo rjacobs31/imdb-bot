@@ -12,6 +12,29 @@ const patterns = {
   negative: /no|nope|nah/i
 };
 
+function getMovieShortDescription(movie) {
+  let sentences = [];
+
+  if ('title' in movie) {
+    sentences.push(`The movie is titled "${movie.title}".`);
+  }
+
+  if ('runtime' in movie && movie.runtime !== 'N\\A' &&
+      'rated' in movie && movie.rated !== 'N\\A') {
+    sentences.push(`It\'s ${movie.runtime} long and is rated ${movie.rated}.`);
+  } else if ('runtime' in movie && movie.runtime !== 'N\\A') {
+    sentences.push(`It\'s ${movie.runtime} long.`);
+  } else if ('rated' in movie && movie.rated !== 'N\\A') {
+    sentences.push('It\'s rated ${movie.rated}.');
+  }
+
+  if ('rating' in movie && movie.rating !== 'N\\A') {
+    sentences.push(`It has a rating of ${movie.rating}.`);
+  }
+
+  return sentences;
+}
+
 module.exports = function(bp) {
   const cachedMovie = require('../utils/cached_movie')(bp);
 
@@ -68,24 +91,7 @@ module.exports = function(bp) {
               convo.set('movie', movie);
               convo.say(txt('Found it!'));
               await cachedMovie.upsert(movie);
-              let sentences = [];
-
-              if ('title' in movie) {
-                sentences.push(`The movie is titled "${movie.title}".`);
-              }
-
-              if ('runtime' in movie && 'rated' in movie) {
-                sentences.push(`It\'s ${movie.runtime} long and is rated ${movie.rated}.`);
-              } else if ('runtime' in movie) {
-                sentences.push(`It\'s ${movie.runtime} long.`);
-              } else if ('rated' in movie) {
-                sentences.push('It\'s rated ${movie.rated}.');
-              }
-
-              if ('rating' in movie) {
-                sentences.push(`It has a rating of ${movie.rating}.`);
-              }
-
+              let sentences = getMovieShortDescription(movie);
               convo.say(txt(_.join(sentences, ' ')));
               convo.switchTo('movie_actions');
             } else {
