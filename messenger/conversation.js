@@ -28,7 +28,8 @@ module.exports = function(bp) {
           {content_type: 'text', title: 'No', payload: 'no'}
         ]
       };
-      convo.threads['default'].addMessage(txt('Hello! This is an example conversation.'));
+      convo.threads['default'].addMessage(txt('Hello! I\'m IMDb Bot.'));
+      convo.threads['default'].addMessage(txt('I\'m here to help you find movies.'));
       convo.threads['default'].addQuestion(txt('Would you like to look up a movie?', greetOptions), [
         {
           pattern: patterns.affirmative,
