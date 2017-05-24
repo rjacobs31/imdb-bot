@@ -179,7 +179,8 @@ module.exports = function(bp) {
         quick_replies: [
           {content_type: 'text', title: 'What\'s the plot?', payload: 'plot'},
           {content_type: 'text', title: 'Who helped?', payload: 'who'},
-          {content_type: 'text', title: 'Find similar movies', payload: 'similar'}
+          {content_type: 'text', title: 'Find similar movies', payload: 'similar'},
+          {content_type: 'text', title: 'Cancel', payload: 'cancel'}
         ]
       };
       const actionsMessage = txt('What would you like to do?', actionsOptions);
