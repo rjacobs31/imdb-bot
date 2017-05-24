@@ -1,7 +1,9 @@
 const _ = require('lodash');
 const imdb = require('../utils/imdb_wrapper');
 const chunk = require('../utils/text_chunking');
+const Promise = require('bluebird');
 
+const imdbBaseUrl = 'https://www.imdb.com/title/';
 const msgMaxLen = 300;
 
 const patterns = {
@@ -66,13 +68,42 @@ function getMovieWhoDescription(movie) {
 
 module.exports = function(bp) {
   const cachedMovie = require('../utils/cached_movie')(bp);
+  const similar = require('../utils/similar_search')(bp);
+
+  function getSimilarTemplate(imdbId) {
+    return similar.getSimilar(imdbId)
+      .then((movies) => {
+        if (_.isEmpty(movies)) {
+          return Promise.resolve();
+        }
+        const maxElements = 10;
+        let elements = _.map(_.slice(movies, 0, maxElements), (movie) => {
+          return {
+            title: movie.title,
+            image_url: ('poster' in movie ? movie.poster : null),
+            subtitle: 'Rating: ' + movie.rating,
+            buttons: [
+              { type: 'postback', title: 'Get info', payload: 'basic:' + movie.imdbid },
+              { type: 'web_url', title: 'Visit IMDb page', url: imdbBaseUrl + movie.imdbid }
+            ]
+          };
+        });
+        let payload = {
+          template_type: 'generic',
+          image_aspect_ratio: 'square',
+          elements: elements
+        };
+        return Promise.resolve(payload);
+      });
+  }
 
   bp.hear({platform: 'facebook', text: patterns.greeting}, (event) => {
     if (bp.convo.find(event)) return;
     const txt = (txt, options) => bp.messenger.createText(event.user.id, txt, options);
+    const sendTemplate = (payload) => bp.messenger.sendTemplate(event.user.id, payload);
 
     bp.convo.start(event, (convo) => {
-      convo.messageTypes = ['text', 'message', 'quick_reply'];
+      convo.messageTypes = ['text', 'message', 'quick_reply', 'postback'];
 
       const greetOptions = {
         quick_replies: [
@@ -141,10 +172,14 @@ module.exports = function(bp) {
       convo.threads['movie_actions'].addMessage(
         txt('I can get you *who* helped create movie.')
       );
+      convo.threads['movie_actions'].addMessage(
+        txt('I can find *similar* movies for you.')
+      );
       const actionsOptions = {
         quick_replies: [
-          {content_type: 'text', title: 'Get plot', payload: 'plot'},
-          {content_type: 'text', title: 'Get who helped', payload: 'who'}
+          {content_type: 'text', title: 'What\'s the plot?', payload: 'plot'},
+          {content_type: 'text', title: 'Who helped?', payload: 'who'},
+          {content_type: 'text', title: 'Find similar movies', payload: 'similar'}
         ]
       };
       const actionsMessage = txt('What would you like to do?', actionsOptions);
@@ -188,6 +223,32 @@ module.exports = function(bp) {
               });
             } else {
               convo.say(txt(`Sorry. I don't know anyone who helped to make "${movie.title}".`));
+            }
+            convo.repeat();
+          }
+        },
+        {
+          pattern: /similar/i,
+          callback: async () => {
+            let movie = convo.get('movie');
+            if (movie) {
+              let payload = await getSimilarTemplate(movie.imdbid);
+              sendTemplate(payload);
+            }
+          }
+        },
+        {
+          pattern: /^basic:/i,
+          callback: async (req) => {
+            convo.say(txt('Roger, Dodger. I\'ll find it.'));
+            let imdbId = _.replace(req.text, /^basic:/i, '');
+            let movie = await cachedMovie.getById(imdbId);
+            if (movie) {
+              convo.set('movie', movie);
+              let sentences = getMovieShortDescription(movie);
+              convo.say(txt(_.join(sentences, ' ')));
+            } else {
+              convo.say(txt('Sorry, I couldn\'t find that similar movie.'));
             }
             convo.repeat();
           }
