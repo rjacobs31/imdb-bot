@@ -14,22 +14,26 @@ const patterns = {
 
 function getMovieShortDescription(movie) {
   let sentences = [];
+  let hasRuntime = ('runtime' in movie && movie.runtime !== 'N/A');
+  let hasRated = ('rated' in movie && movie.rated !== 'N/A');
+  let hasRating = ('rating' in movie && movie.rating !== 'N/A');
 
   if ('title' in movie) {
     sentences.push(`The movie is titled "${movie.title}".`);
   }
 
-  if ('runtime' in movie && movie.runtime !== 'N\\A' &&
-      'rated' in movie && movie.rated !== 'N\\A') {
+  if (hasRuntime && hasRated) {
     sentences.push(`It\'s ${movie.runtime} long and is rated ${movie.rated}.`);
-  } else if ('runtime' in movie && movie.runtime !== 'N\\A') {
+  } else if (hasRuntime) {
     sentences.push(`It\'s ${movie.runtime} long.`);
-  } else if ('rated' in movie && movie.rated !== 'N\\A') {
+  } else if (hasRated) {
     sentences.push('It\'s rated ${movie.rated}.');
   }
 
-  if ('rating' in movie && movie.rating !== 'N\\A') {
+  if (hasRating) {
     sentences.push(`It has a rating of ${movie.rating}.`);
+  } else {
+    sentences.push('I don\'t know what the rating is.');
   }
 
   return sentences;
@@ -37,9 +41,9 @@ function getMovieShortDescription(movie) {
 
 function getMovieWhoDescription(movie) {
   let sentences = [];
-  let hasDirector = ('director' in movie && movie.director !== 'N\\A');
-  let hasWriter = ('writer' in movie && movie.writer !== 'N\\A');
-  let hasActors = ('actors' in movie && movie.actors !== 'N\\A');
+  let hasDirector = ('director' in movie && movie.director !== 'N/A');
+  let hasWriter = ('writer' in movie && movie.writer !== 'N/A');
+  let hasActors = ('actors' in movie && movie.actors !== 'N/A');
 
   if (hasDirector && hasWriter) {
     sentences.push(`The movie was directed by ${movie.director} and written by ${movie.writer}.`);
